@@ -1,0 +1,29 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+appsettings.*.json
+!appsettings.json
+!appsettings.*.template.json
+
+# Node / Vue
+node_modules/
+dist/
+dev-dist/
+.vite/
+
+# Docker volumes
+.docker/
+
+# OS
+.DS_Store
+
+publish/
+publish.zip
+
+# Claude Code local settings (personal, not shared)
+.claude/settings.local.json
+
+# Generated frontend assets copied into API
+src/ExpiryKeeper.Api/wwwroot/
