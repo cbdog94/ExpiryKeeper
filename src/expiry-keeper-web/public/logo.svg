@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background rounded square -->
+  <rect width="512" height="512" rx="112" fill="#1989fa"/>
+
+  <!-- Pill capsule body -->
+  <g transform="translate(256, 230)">
+    <!-- Left half of pill (white) -->
+    <path d="M-110,0 A70,70 0 0 1 -110,-1 L-110,-55 Q-110,-80 -70,-80 L0,-80 L0,80 L-70,80 Q-110,80 -110,55 Z"
+      fill="white" opacity="0.95"/>
+    <!-- Right half of pill (light blue) -->
+    <path d="M110,0 A70,70 0 0 0 110,-1 L110,-55 Q110,-80 70,-80 L0,-80 L0,80 L70,80 Q110,80 110,55 Z"
+      fill="#a8d4ff" opacity="0.95"/>
+    <!-- Dividing line -->
+    <line x1="0" y1="-80" x2="0" y2="80" stroke="white" stroke-width="4" opacity="0.6"/>
+    <!-- Shine effect -->
+    <ellipse cx="-55" cy="-35" rx="22" ry="10" fill="white" opacity="0.35" transform="rotate(-20,-55,-35)"/>
+  </g>
+
+  <!-- Clock circle (expiry indicator) -->
+  <circle cx="358" cy="358" r="72" fill="#ff976a"/>
+  <circle cx="358" cy="358" r="60" fill="white"/>
+  <!-- Clock face -->
+  <circle cx="358" cy="358" r="4" fill="#ff976a"/>
+  <!-- Clock hands -->
+  <line x1="358" y1="358" x2="358" y2="318" stroke="#ff976a" stroke-width="6" stroke-linecap="round"/>
+  <line x1="358" y1="358" x2="385" y2="372" stroke="#ff976a" stroke-width="5" stroke-linecap="round"/>
+  <!-- Clock ticks -->
+  <line x1="358" y1="302" x2="358" y2="310" stroke="#ccc" stroke-width="3" stroke-linecap="round"/>
+  <line x1="358" y1="406" x2="358" y2="414" stroke="#ccc" stroke-width="3" stroke-linecap="round"/>
+  <line x1="302" y1="358" x2="310" y2="358" stroke="#ccc" stroke-width="3" stroke-linecap="round"/>
+  <line x1="406" y1="358" x2="414" y2="358" stroke="#ccc" stroke-width="3" stroke-linecap="round"/>
+</svg>
