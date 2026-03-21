@@ -100,6 +100,8 @@
       <van-cell icon="apps-o" title="添加到主屏幕"
         label="Safari → 分享按钮 → 添加到主屏幕，可获得完整通知支持" />
     </van-cell-group>
+
+    <div class="version-info">效期管家 · {{ gitCommit }}</div>
   </div>
 </template>
 
@@ -109,6 +111,8 @@ import { showToast } from 'vant'
 import { useAuthStore } from '@/stores/auth'
 import { usePush } from '@/composables/usePush'
 import api from '@/services/api'
+
+const gitCommit = __GIT_COMMIT__
 
 const authStore = useAuthStore()
 const push = usePush()
@@ -241,4 +245,10 @@ async function sendTest() {
 }
 .test-result.success { background: #e8f7ef; color: #07c160; }
 .test-result.fail { background: #fff0f0; color: #ee0a24; }
+.version-info {
+  text-align: center;
+  color: #c8c9cc;
+  font-size: 12px;
+  padding: 16px 0 8px;
+}
 </style>
