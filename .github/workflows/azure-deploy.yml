@@ -1,4 +1,6 @@
 name: Build and Deploy to Azure Web App
+permissions:
+  contents: read
 
 on:
   push:
@@ -6,7 +8,6 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: YOUR_AZURE_WEBAPP_NAME
   DOTNET_VERSION: 10.x
   NODE_VERSION: '25.x'
 
@@ -15,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -23,7 +24,7 @@ jobs:
           version: 10
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
@@ -36,7 +37,7 @@ jobs:
           pnpm build
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -48,9 +49,15 @@ jobs:
       - name: Publish .NET app
         run: dotnet publish src/ExpiryKeeper.Api/ExpiryKeeper.Api.csproj -c Release -o ./publish
 
+      - name: Log in to Azure CLI
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           package: ./publish

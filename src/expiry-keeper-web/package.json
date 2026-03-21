@@ -9,23 +9,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@azure/msal-browser": "^5.5.0",
+    "@azure/msal-browser": "^5.6.1",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
     "axios": "^1.13.6",
     "pinia": "^3.0.4",
     "vant": "^4.9.22",
-    "vue": "^3.5.29",
-    "vue-router": "^5.0.3",
+    "vue": "^3.5.30",
+    "vue-router": "^5.0.4",
     "workbox-precaching": "^7.4.0",
     "workbox-routing": "^7.4.0",
     "workbox-strategies": "^7.4.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.4",
+    "@vitejs/plugin-vue": "^6.0.5",
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0",
-    "vite-plugin-vue-devtools": "^8.0.6",
+    "vite-plugin-vue-devtools": "^8.1.0",
     "workbox-window": "^7.4.0"
   },
   "engines": {
