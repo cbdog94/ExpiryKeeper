@@ -1,9 +1,17 @@
 import { fileURLToPath, URL } from 'node:url'
+import { execSync } from 'node:child_process'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const gitCommit = (() => {
+  try { return execSync('git rev-parse --short HEAD').toString().trim() } catch { return 'unknown' }
+})()
+
 export default defineConfig({
+  define: {
+    __GIT_COMMIT__: JSON.stringify(gitCommit)
+  },
   plugins: [
     vue(),
     VitePWA({
