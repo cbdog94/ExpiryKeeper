@@ -31,6 +31,16 @@ ngrok http 5173
 
 iOS Safari 需要通过 ngrok 的 HTTPS 地址访问，否则 Web Crypto API 不可用。
 
+## 更新依赖
+
+```bash
+# 交互式升级
+pnpm up -i --latest
+
+# 或直接升级所有
+pnpm update --latest
+```
+
 ## 目录结构
 
 ```
