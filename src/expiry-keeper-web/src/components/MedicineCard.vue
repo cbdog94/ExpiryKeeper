@@ -9,7 +9,7 @@
       </template>
     </van-cell>
     <template #right>
-      <van-button square type="danger" text="删除" @click="emit('delete', medicine.id)" />
+      <van-button class="delete-btn" square type="danger" text="删除" @click="emit('delete', medicine.id)" />
     </template>
   </van-swipe-cell>
 </template>
@@ -43,4 +43,5 @@ const tagText = computed(() => {
   gap: 6px;
 }
 .expire-date { font-size: 12px; color: #999; white-space: nowrap; }
+.delete-btn { height: 100%; }
 </style>

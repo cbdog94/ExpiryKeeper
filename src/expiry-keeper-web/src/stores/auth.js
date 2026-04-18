@@ -13,6 +13,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function initialize() {
     if (initialized.value) return
+    if (import.meta.env.VITE_MOCK === 'true') {
+      account.value = { name: 'Mock 用户', username: 'mock@example.com' }
+      initialized.value = true
+      return
+    }
     if (initPromise) return initPromise
     initPromise = (async () => {
       await initializeMsal()
@@ -24,10 +29,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login() {
+    if (import.meta.env.VITE_MOCK === 'true') return
     await msalInstance.loginRedirect(loginRequest)
   }
 
   async function logout() {
+    if (import.meta.env.VITE_MOCK === 'true') { account.value = null; return }
     try {
       await msalInstance.logoutRedirect({
         account: toRaw(account.value),
