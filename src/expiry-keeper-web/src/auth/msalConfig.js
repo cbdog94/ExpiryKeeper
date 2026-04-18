@@ -17,15 +17,20 @@ export const loginRequest = {
   scopes: ['api://297c800b-6631-40a4-8d94-7985a1afc243/Medicine.Access']
 }
 
-export const msalInstance = new PublicClientApplication(msalConfig)
+export const msalInstance = import.meta.env.VITE_MOCK === 'true'
+  ? null
+  : new PublicClientApplication(msalConfig)
 
 export async function initializeMsal() {
+  if (import.meta.env.VITE_MOCK === 'true') return null
   await msalInstance.initialize()
   const result = await msalInstance.handleRedirectPromise()
   return result
 }
 
 export async function getAccessToken() {
+  if (import.meta.env.VITE_MOCK === 'true') return 'mock-token'
+
   const accounts = msalInstance.getAllAccounts()
   if (accounts.length === 0) return null
 
