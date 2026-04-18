@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-- **框架**: Vue 3 + Vite 7
+- **框架**: Vue 3 + Vite 8
 - **UI**: Vant 4（移动端组件库）
 - **状态**: Pinia
 - **认证**: Azure AD（@azure/msal-browser）
@@ -18,10 +18,19 @@
 ```bash
 pnpm install
 pnpm dev       # http://localhost:5173，/api 自动代理到 :5090
+pnpm dev:mock  # http://localhost:5173，无需后端（见下方说明）
 pnpm build     # 输出到 dist/，同时生成 sw.js
 ```
 
-### 本地 HTTPS（移动端调试必需）
+### Mock 模式（无需后端）
+
+`pnpm dev:mock` 通过 Vite 服务端中间件拦截所有 `/api/*` 请求，返回 `src/mocks/handlers.js` 中定义的内存数据，同时跳过 Azure AD 登录。
+
+适用场景：纯前端开发、通过本机 IP（`192.168.x.x`）进行移动端调试。
+
+> Mock 数据在服务器进程内存中，重启后重置。
+
+### 本地 HTTPS（Web Push 调试必需）
 
 Web Push 和 MSAL 需要 HTTPS。使用 ngrok：
 
