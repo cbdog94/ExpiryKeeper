@@ -13,7 +13,7 @@
     "@azure/msal-browser": "^5.7.0",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
-    "axios": "^1.15.0",
+    "axios": "^1.15.2",
     "pinia": "^3.0.4",
     "vant": "^4.9.24",
     "vue": "^3.5.32",
