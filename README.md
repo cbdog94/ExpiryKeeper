@@ -39,6 +39,18 @@ dotnet run        # 开发服务器（:5090）
 dotnet build
 ```
 
+## Copilot 依赖升级技能
+
+仓库提供 [upgrade-packages 技能](.github/skills/upgrade-packages/SKILL.md)，用于升级前端 pnpm 和后端 NuGet 依赖，检查兼容性、更新锁文件并验证构建。
+
+在 Copilot Agent 模式中可使用以下提示：
+
+- “使用 upgrade-packages 技能升级前端和后端依赖。”
+- “只升级前端依赖，保持当前运行时和兼容版本范围。”
+- “检查后端过时依赖和安全公告，先给出方案，不修改文件。”
+
+默认不引入新的预览版本、不更改运行时、不部署，也不自动提交或推送。
+
 ## 部署
 
 ```bash
