@@ -42,13 +42,24 @@ iOS Safari 需要通过 ngrok 的 HTTPS 地址访问，否则 Web Crypto API 不
 
 ## 更新依赖
 
-```bash
-# 交互式升级
-pnpm up -i --latest
+建议使用仓库的 [upgrade-packages Copilot 技能](../../.github/skills/upgrade-packages/SKILL.md)，先检查版本、兼容性和安全公告，再选择需要升级的包。
 
-# 或直接升级所有
-pnpm update --latest
+```bash
+pnpm outdated
+pnpm audit
+
+# 在现有版本范围内交互式升级
+pnpm up -i
+
+# 验证锁文件、构建和安全公告
+pnpm install --frozen-lockfile
+pnpm build
+pnpm audit
 ```
+
+主版本升级需单独评估迁移说明；保留 Vue 的预览版本固定值，避免自动降级到较旧的稳定版本。
+`workbox-build` 显式声明为开发依赖，以满足 `vite-plugin-pwa` 的 peer 约束并与其他 Workbox 包保持兼容。
+Workbox 7.4.1 使用的 `@rollup/plugin-terser` 已要求 `serialize-javascript >=7.0.3`（同一主版本），不再需要旧的覆盖配置。
 
 ## 目录结构
 
