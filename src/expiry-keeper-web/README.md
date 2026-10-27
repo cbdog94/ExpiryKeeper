@@ -15,6 +15,8 @@
 
 ## 快速开始
 
+需要 Node.js >=24.12.0 和 pnpm 10。CI 使用最低支持版本 Node.js 24.12.0，验证依赖安装与生产构建。
+
 ```bash
 pnpm install
 pnpm dev       # http://localhost:5173，/api 自动代理到 :5090
@@ -58,7 +60,7 @@ pnpm audit
 ```
 
 主版本升级需单独评估迁移说明；保留 Vue 的预览版本固定值，避免自动降级到较旧的稳定版本。
-`vue-router` 暂限于 `~5.3.1`，避免 5.4.0 引入要求 Node `^22.18.0 || >=24.11.0` 的 AST/Babel 8 依赖；升级前需重新评估 Node 兼容性。
+Node.js 最低版本为 24.12.0，同时满足 Vue Router 5.4 的 AST/Babel 8、ZXing 和可选 Linux 原生依赖的版本要求；升级依赖时需验证该最低版本。
 `workbox-build` 显式声明为开发依赖，以满足 `vite-plugin-pwa` 的 peer 约束并与其他 Workbox 包保持兼容。
 Workbox 7.4.1 使用的 `@rollup/plugin-terser` 已要求 `serialize-javascript >=7.0.3`（同一主版本），不再需要旧的覆盖配置。
 
