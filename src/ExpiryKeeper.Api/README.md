@@ -10,6 +10,10 @@ ASP.NET Core 10 后端，提供效期管家 PWA 所需的 REST API，包含商�
 - **AI/OCR**: Azure OpenAI GPT 视觉模型
 - **推送**: Web Push（VAPID）+ Bark
 
+### 依赖安全
+
+显式引用 `System.Security.Cryptography.Pkcs` 10.0.14，避免 `Microsoft.Identity.Web` 的传递依赖解析到存在已知漏洞的 10.0.10。待上游最低依赖版本达到 10.0.13 或更高版本后，可重新评估是否移除此直接引用。
+
 ## 快速开始
 
 ### 前置依赖

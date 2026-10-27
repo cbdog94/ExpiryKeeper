@@ -12,7 +12,7 @@ on:
 
 env:
   DOTNET_VERSION: 10.x
-  NODE_VERSION: '25.x'
+  NODE_VERSION: '24.12.0'
 
 jobs:
   build:
@@ -36,7 +36,7 @@ jobs:
       - name: Build Vue frontend
         working-directory: src/expiry-keeper-web
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile --strict-peer-dependencies --engine-strict
           pnpm build
 
       - name: Setup .NET
