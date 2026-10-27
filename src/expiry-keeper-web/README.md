@@ -58,6 +58,7 @@ pnpm audit
 ```
 
 主版本升级需单独评估迁移说明；保留 Vue 的预览版本固定值，避免自动降级到较旧的稳定版本。
+`vue-router` 暂限于 `~5.3.1`，避免 5.4.0 引入要求 Node `^22.18.0 || >=24.11.0` 的 AST/Babel 8 依赖；升级前需重新评估 Node 兼容性。
 `workbox-build` 显式声明为开发依赖，以满足 `vite-plugin-pwa` 的 peer 约束并与其他 Workbox 包保持兼容。
 Workbox 7.4.1 使用的 `@rollup/plugin-terser` 已要求 `serialize-javascript >=7.0.3`（同一主版本），不再需要旧的覆盖配置。
 
