@@ -1,6 +1,5 @@
-using Azure.AI.OpenAI;
-using Azure.Identity;
 using OpenAI.Chat;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace MedicineExpiration.Api.Services;
@@ -9,6 +8,8 @@ public record OcrMedicineResult(string? Name, string? ExpireDate, string? Manufa
 
 public class OcrService
 {
+    internal static readonly ActivitySource OcrActivitySource = new("ExpiryKeeper.Ocr");
+
     private const string SystemPrompt = """
         你是一个商品保质期信息识别助手，专门处理药品、食品、日用品等各类商品包装。
         请从图片中提取以下信息，以 JSON 格式返回：
@@ -28,48 +29,60 @@ public class OcrService
     private readonly ChatClient _chatClient;
     private readonly ILogger<OcrService> _logger;
 
-    public OcrService(IConfiguration config, ILogger<OcrService> logger)
+    public OcrService(ChatClient chatClient, ILogger<OcrService> logger)
     {
+        _chatClient = chatClient;
         _logger = logger;
-        var endpoint = config["AzureOpenAI:Endpoint"]
-            ?? throw new InvalidOperationException("AzureOpenAI:Endpoint not configured");
-        var deployment = config["AzureOpenAI:DeploymentName"] ?? "gpt-4o";
-        _chatClient = new AzureOpenAIClient(new Uri(endpoint), new DefaultAzureCredential())
-            .GetChatClient(deployment);
     }
 
     public async Task<OcrMedicineResult> AnalyzeMultipleAsync(
         IReadOnlyList<(Stream Stream, string ContentType)> images,
         CancellationToken ct = default)
     {
+        using var activity = OcrActivitySource.StartActivity("ocr.analyze");
         if (images.Count == 0)
             return new OcrMedicineResult(null, null, null, null, "");
 
-        // Read all streams concurrently, then send all images in one API call so the
-        // model can reason across them (e.g. name on image 1, expiry date on image 2).
-        var readTasks = images.Select(async img =>
+        string[] dataUris;
+        using (OcrActivitySource.StartActivity("ocr.images.encode"))
         {
-            using var ms = new MemoryStream();
-            await img.Stream.CopyToAsync(ms, ct);
-            return $"data:{img.ContentType};base64,{Convert.ToBase64String(ms.ToArray())}";
-        });
-        var dataUris = await Task.WhenAll(readTasks);
+            // Read all streams concurrently, then send all images in one API call so the
+            // model can reason across them (e.g. name on image 1, expiry date on image 2).
+            var readTasks = images.Select(async img =>
+            {
+                using var ms = new MemoryStream();
+                await img.Stream.CopyToAsync(ms, ct);
+                return $"data:{img.ContentType};base64,{Convert.ToBase64String(ms.ToArray())}";
+            });
+            dataUris = await Task.WhenAll(readTasks);
+        }
 
-        var hint = dataUris.Length > 1
-            ? $"以下 {dataUris.Length} 张图片是同一商品的不同面，请综合识别所有图片中的信息："
-            : "请识别这张商品包装图片中的信息：";
-
-        var contentParts = new List<ChatMessageContentPart> { ChatMessageContentPart.CreateTextPart(hint) };
-        contentParts.AddRange(dataUris.Select(uri => ChatMessageContentPart.CreateImagePart(new Uri(uri))));
-
-        var messages = new List<ChatMessage>
+        List<ChatMessage> messages;
+        using (OcrActivitySource.StartActivity("ocr.request.build"))
         {
-            new SystemChatMessage(SystemPrompt),
-            new UserChatMessage([.. contentParts])
-        };
+            var hint = dataUris.Length > 1
+                ? $"以下 {dataUris.Length} 张图片是同一商品的不同面，请综合识别所有图片中的信息："
+                : "请识别这张商品包装图片中的信息：";
 
-        var response = await _chatClient.CompleteChatAsync(messages, cancellationToken: ct);
-        var rawText = response.Value.Content[0].Text;
+            var contentParts = new List<ChatMessageContentPart> { ChatMessageContentPart.CreateTextPart(hint) };
+            contentParts.AddRange(dataUris.Select(uri => ChatMessageContentPart.CreateImagePart(new Uri(uri))));
+
+            messages =
+            [
+                new SystemChatMessage(SystemPrompt),
+                new UserChatMessage([.. contentParts])
+            ];
+        }
+
+        ChatCompletion completion;
+        using (OcrActivitySource.StartActivity("ocr.model.call"))
+        {
+            var response = await _chatClient.CompleteChatAsync(messages, cancellationToken: ct);
+            completion = response.Value;
+        }
+
+        using var parseActivity = OcrActivitySource.StartActivity("ocr.response.parse");
+        var rawText = completion.Content[0].Text;
         _logger.LogDebug("LLM OCR response: {Text}", rawText);
         return ParseResponse(rawText);
     }
