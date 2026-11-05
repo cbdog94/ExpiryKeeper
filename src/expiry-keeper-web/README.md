@@ -64,6 +64,14 @@ Node.js 最低版本为 24.12.0，同时满足 Vue Router 5.4 的 AST/Babel 8、
 `workbox-build` 显式声明为开发依赖，以满足 `vite-plugin-pwa` 的 peer 约束并与其他 Workbox 包保持兼容。
 Workbox 7.4.1 使用的 `@rollup/plugin-terser` 已要求 `serialize-javascript >=7.0.3`（同一主版本），不再需要旧的覆盖配置。
 
+### 当前依赖审计范围
+
+2026-11-05 验证：MSAL 5.28.0、Axios 1.21.0、Vite 8.3.6 均兼容当前 Node.js 最低版本。锁文件将 `follow-redirects` 更新至 1.16.2、`serialize-javascript` 更新至 7.1.4，修复对应安全通告，没有新增 overrides。
+
+`pnpm audit` 仍报告 Workbox 构建链的 2 项中危和 1 项低危通告：`glob`、`minimatch` 的修复版本超出当前父依赖的版本范围，`deepmerge` 暂无已发布的修复版本。这些是构建依赖的审计结果，不代表已证实应用存在可利用路径；需等待上游兼容修复，或单独评估主版本迁移，不能用强制覆盖或关闭审计掩盖。
+
+本轮保留 Vue 3.6.0-beta.17 固定值，不自动切换到另一个预览版本或降级到 Vue 3.5；Pinia 4 和 vite-plugin-pwa 2 的主版本迁移不在本轮范围。Workbox 的 `glob@11.1.0` 弃用提示和 PWA 构建的 `inlineDynamicImports` 弃用提示在升级前已存在。
+
 ## 目录结构
 
 ```

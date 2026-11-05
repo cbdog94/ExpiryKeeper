@@ -12,7 +12,9 @@ ASP.NET Core 10 后端，提供效期管家 PWA 所需的 REST API，包含商�
 
 ### 依赖安全
 
-显式引用 `System.Security.Cryptography.Pkcs` 10.0.14，避免 `Microsoft.Identity.Web` 的传递依赖解析到存在已知漏洞的 10.0.10。待上游最低依赖版本达到 10.0.13 或更高版本后，可重新评估是否移除此直接引用。
+`Microsoft.Identity.Web` 已升级至 4.17.0，其 TokenCache 包的 `System.Security.Cryptography.Pkcs` 最低依赖已提升至修复版本 10.0.13。继续显式引用 10.0.14，以保留当前 .NET 10 服务更新补丁，避免解析回较旧的补丁版本。
+
+本轮保持 .NET 10、EF Core 和 OpenAPI 的现有兼容版本线；`Azure.AI.OpenAI` 保留明确固定的 2.2.0-beta.4，不自动引入其他预览版本。依赖升级验证只执行还原、构建、发布和安全审计，不启动自动迁移数据库的 API。
 
 ## 快速开始
 
