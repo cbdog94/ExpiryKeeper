@@ -20,7 +20,7 @@ ASP.NET Core 10 后端，提供效期管家 PWA 所需的 REST API，包含商�
 
 - .NET 10 SDK
 - Docker（本地 SQL Server）或 Azure SQL
-- `az login`（本地用 DefaultAzureCredential）
+- `az login`（Development 环境的 OCR 使用 AzureCliCredential；SQL 连接仍使用连接字符串配置的认证方式）
 
 ### 本地运行
 
@@ -91,6 +91,25 @@ npx web-push generate-vapid-keys
 - 所有图片在**同一次** OpenAI 请求中分析，模型可跨图推理
 - 返回：`name`、`expireDate`（YYYY-MM-DD）、`manufacturer`、`category`、`rawText`
 - 分类枚举：`药品` / `食品` / `日用品` / `保健品` / `其他`
+
+#### OCR 阶段耗时
+
+OCR 的 `TokenCredential` 和 `ChatClient` 在进程内按单例复用，以保留 SDK 的令牌缓存；`OcrService` 仍为 Scoped，不共享请求图片或识别结果。Development 环境仅使用 `AzureCliCredential`，需先执行 `az login`，不会探测本地不存在的托管身份。其他环境保留 `DefaultAzureCredential`，Azure App Service 可继续使用系统托管身份，不需要添加密钥配置。
+
+客户端首次解析时读取 `AzureOpenAI` 配置；修改终结点或部署名称后需重启应用。凭据选择或令牌获取失败会沿原调用路径抛出，不会回退到匿名调用或其他模型。
+
+`OcrService` 使用名为 `ExpiryKeeper.Ocr` 的 `ActivitySource` 提供诊断跨度，可由 .NET `ActivityListener` 或 OpenTelemetry 订阅：
+
+| 跨度 | 范围 |
+|------|------|
+| `ocr.client.initialize` | 首次解析单例时创建 Azure OpenAI 客户端和凭据对象；后续请求不再产生此跨度，不包含首次获取令牌 |
+| `ocr.analyze` | 整个识别服务方法，包含下列四个子阶段 |
+| `ocr.images.encode` | 并行读取图片及 Base64 编码 |
+| `ocr.request.build` | 构造多图消息 |
+| `ocr.model.call` | SDK 调用，包含令牌获取、网络、Azure 处理及 SDK 重试 |
+| `ocr.response.parse` | 提取、记录和解析模型返回文本 |
+
+未订阅时不会导出跨度，也不会改变接口返回结构。图片内容和识别文本不写入跨度标签。`ocr.model.call` 不是纯模型推理时间；客户端端到端时间还包含上传、ASP.NET Core 请求处理及响应传输。嵌套跨度不能重复相加。
 
 ### 推送订阅 `/api/push`
 

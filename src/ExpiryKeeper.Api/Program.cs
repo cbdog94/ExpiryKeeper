@@ -30,7 +30,7 @@ builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IDrugDatabaseService, StubDrugDatabaseService>();
 
 // OCR
-builder.Services.AddScoped<OcrService>();
+builder.Services.AddOcr();
 
 // Background expiry check
 builder.Services.AddHostedService<ExpiryCheckHostedService>();
